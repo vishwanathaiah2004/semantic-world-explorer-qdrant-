@@ -34,7 +34,7 @@ CLUSTER_LABELS = {
 
 def build_graph(
     points: list[dict],
-    similarity_threshold: float = 0.65,
+    similarity_threshold: float = 0.05,
     max_links_per_node: int = 5,
 ) -> GraphData:
     if not points:
@@ -55,13 +55,12 @@ def build_graph(
     else:
         cluster_ids = [0] * len(points)
 
-    # Build nodes
+    # Build nodes — spread in a circle by cluster
     nodes = []
     for i, (pid, payload, cid) in enumerate(zip(ids, payloads, cluster_ids)):
         category = payload.get("category", "Other")
         cluster_label = CLUSTER_LABELS.get(cid, f"Cluster {cid}")
 
-        # Spread initial positions in a circle
         angle = (i / len(points)) * 2 * math.pi
         radius = 300 + (cid * 80)
         x = radius * math.cos(angle) + (cid * 50)
@@ -85,9 +84,8 @@ def build_graph(
     # Build similarity matrix and extract top links
     sim_matrix = vectors_norm @ vectors_norm.T
     links = []
-    link_counts: dict[str, int] = {pid: 0 for pid in ids}
+    link_counts = {pid: 0 for pid in ids}
 
-    # Get upper triangle pairs sorted by similarity
     pairs = []
     for i in range(len(ids)):
         for j in range(i + 1, len(ids)):
@@ -109,6 +107,31 @@ def build_graph(
         links.append(GraphLink(source=id_i, target=id_j, similarity=round(sim, 4)))
         link_counts[id_i] += 1
         link_counts[id_j] += 1
+
+    # Guarantee every isolated node connects to its nearest neighbour
+    for i, pid in enumerate(ids):
+        if link_counts[pid] == 0:
+            best_sim = -1.0
+            best_j = -1
+            for j in range(len(ids)):
+                if j == i:
+                    continue
+                s = float(sim_matrix[i, j])
+                if s > best_sim:
+                    best_sim = s
+                    best_j = j
+            if best_j >= 0:
+                id_j = ids[best_j]
+                pair_key = (min(pid, id_j), max(pid, id_j))
+                if pair_key not in seen_pairs:
+                    seen_pairs.add(pair_key)
+                    links.append(GraphLink(
+                        source=pid,
+                        target=id_j,
+                        similarity=round(best_sim, 4)
+                    ))
+                    link_counts[pid] += 1
+                    link_counts[id_j] += 1
 
     return GraphData(nodes=nodes, links=links)
 

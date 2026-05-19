@@ -59,6 +59,18 @@ export const api = {
     });
   },
 
+  async getDiscovery(limit = 8): Promise<{
+    discoveries: Array<{
+      node_a: { id: string; title: string; category: string };
+      node_b: { id: string; title: string; category: string };
+      similarity: number;
+      is_cross_domain: boolean;
+    }>;
+    total: number;
+  }> {
+    return apiFetch(`/api/discovery?limit=${limit}`);
+  },
+
   async healthCheck(): Promise<boolean> {
     try {
       const res = await fetch(`${API_URL}/health`);

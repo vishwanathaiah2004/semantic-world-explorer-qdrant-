@@ -1,10 +1,9 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from models.schemas import (
     SearchRequest, UploadResponse, GraphData, NodeDetail, SearchResult
 )
-from embeddings.provider import get_embedding_provider, EmbeddingProvider
-from qdrant_store.service import get_qdrant_service, QdrantService
+from embeddings.provider import get_embedding_provider
+from qdrant_store.service import get_qdrant_service
 from services.graph_service import build_graph
 from services.insight_service import generate_node_insight, explain_connection
 from utils.file_parser import parse_uploaded_file
@@ -233,3 +232,97 @@ async def explain_nodes_connection(body: dict):
         content_b=pb["payload"].get("content", ""),
     )
     return result
+
+
+@router.get("/reset")
+async def reset_collection():
+    """Delete and re-seed the collection with fresh embeddings."""
+    _, qdrant = get_deps()
+    try:
+        qdrant.delete_collection()
+    except Exception:
+        pass
+    # Re-seed will happen on next startup, but we can trigger it manually
+    from utils.demo_data import DEMO_NODES
+    import uuid as _uuid
+    qdrant.ensure_collection()
+    emb_provider, _ = get_deps()
+    texts = [f"{n['title']}. {n['content']}" for n in DEMO_NODES]
+    embeddings = await emb_provider.embed(texts)
+    points = []
+    for node, vector in zip(DEMO_NODES, embeddings):
+        points.append({
+            "id": str(_uuid.uuid4()),
+            "vector": vector,
+            "payload": {
+                "title": node["title"],
+                "content": node["content"],
+                "category": node["category"],
+                "tags": node["tags"],
+                "source": "demo",
+            },
+        })
+    qdrant.upsert_points(points)
+    return {"success": True, "message": f"Re-seeded {len(points)} nodes with fresh embeddings"}
+async def get_discovery(limit: int = 8):
+    """
+    Surface the most surprising cross-domain connections in the graph.
+    Returns high-similarity pairs from different categories.
+    """
+    _, qdrant = get_deps()
+    try:
+        qdrant.ensure_collection()
+    except Exception:
+        return {"discoveries": []}
+
+    points = qdrant.get_all_points(limit=200)
+    if len(points) < 2:
+        return {"discoveries": []}
+
+    import numpy as np
+    from sklearn.preprocessing import normalize
+
+    ids = [p["id"] for p in points]
+    vectors = np.array([p["vector"] for p in points], dtype=np.float32)
+    payloads = [p["payload"] for p in points]
+
+    vectors_norm = normalize(vectors)
+    sim_matrix = vectors_norm @ vectors_norm.T
+
+    discoveries = []
+    seen = set()
+
+    # Find high-similarity cross-domain pairs
+    pairs = []
+    for i in range(len(ids)):
+        for j in range(i + 1, len(ids)):
+            cat_i = payloads[i].get("category", "")
+            cat_j = payloads[j].get("category", "")
+            if cat_i != cat_j:
+                sim = float(sim_matrix[i, j])
+                if sim >= 0.3:
+                    pairs.append((sim, i, j))
+
+    pairs.sort(reverse=True)
+
+    for sim, i, j in pairs[:limit]:
+        key = (min(ids[i], ids[j]), max(ids[i], ids[j]))
+        if key in seen:
+            continue
+        seen.add(key)
+        discoveries.append({
+            "node_a": {
+                "id": ids[i],
+                "title": payloads[i].get("title", ""),
+                "category": payloads[i].get("category", ""),
+            },
+            "node_b": {
+                "id": ids[j],
+                "title": payloads[j].get("title", ""),
+                "category": payloads[j].get("category", ""),
+            },
+            "similarity": round(sim, 4),
+            "is_cross_domain": True,
+        })
+
+    return {"discoveries": discoveries, "total": len(discoveries)}
