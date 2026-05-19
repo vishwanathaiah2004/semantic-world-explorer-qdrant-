@@ -2,7 +2,7 @@
 
 > **Google Maps for Ideas.** An AI-powered semantic exploration platform where you navigate knowledge as a living, interactive universe — not a chatbot.
 
-Built for the **Qdrant "Think Outside the Bot" Hackathon 2024**.
+Built for the **Qdrant "Think Outside the Bot" Hackathon 2026**.
 
 ---
 
