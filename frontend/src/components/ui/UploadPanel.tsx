@@ -3,8 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Upload, X, CheckCircle, AlertCircle, FileText,
-  Loader2, Sparkles, Database,
+  Upload, X, CheckCircle, AlertCircle, FileText, Loader2, MapPin,
 } from "lucide-react";
 import { api } from "@/services/api";
 
@@ -27,11 +26,6 @@ export function UploadPanel({ onSuccess, onClose }: UploadPanelProps) {
   const handleFile = async (file: File) => {
     setUploadState("uploading");
     setResult(null);
-
-    // Simulate embedding phase for UX
-    setTimeout(() => {
-      if (uploadState === "uploading") setUploadState("embedding");
-    }, 800);
 
     try {
       setUploadState("embedding");
@@ -68,56 +62,61 @@ export function UploadPanel({ onSuccess, onClose }: UploadPanelProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-6"
-      style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(12px)" }}
+      style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
       onClick={(e) => e.target === e.currentTarget && !isProcessing && onClose()}
     >
       <motion.div
-        initial={{ scale: 0.92, y: 24, opacity: 0 }}
+        initial={{ scale: 0.94, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        exit={{ scale: 0.92, y: 24, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 280, damping: 26 }}
-        className="w-full max-w-lg rounded-3xl relative overflow-hidden"
+        exit={{ scale: 0.94, y: 20, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 28 }}
+        className="w-full max-w-md rounded-2xl relative overflow-hidden"
         style={{
-          background: "rgba(8, 11, 24, 0.99)",
-          border: "1px solid rgba(255,255,255,0.09)",
-          boxShadow: "0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(99,102,241,0.1)",
+          background: "rgba(22, 28, 46, 0.99)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 8px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(66,133,244,0.1)",
         }}
       >
-        {/* Top accent */}
+        {/* Google Maps color bar */}
         <div
-          className="h-0.5 w-full"
-          style={{ background: "linear-gradient(90deg, #6366f1, #a78bfa, transparent)" }}
+          className="h-1 w-full"
+          style={{
+            background: "linear-gradient(90deg, #4285f4, #34a853, #fbbc04, #ea4335)",
+          }}
         />
 
-        <div className="p-8">
+        <div className="p-6">
           {/* Header */}
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div
-                  className="w-6 h-6 rounded-lg flex items-center justify-center"
-                  style={{
-                    background: "rgba(99,102,241,0.15)",
-                    border: "1px solid rgba(99,102,241,0.3)",
-                  }}
-                >
-                  <Database className="w-3.5 h-3.5 text-indigo-400" />
-                </div>
-                <h2
-                  className="text-white font-bold text-xl"
-                  style={{ fontFamily: "Syne, sans-serif" }}
-                >
-                  Ingest Data
-                </h2>
+          <div className="flex items-start justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center"
+                style={{
+                  background: "rgba(66,133,244,0.12)",
+                  border: "1px solid rgba(66,133,244,0.25)",
+                }}
+              >
+                <MapPin className="w-4.5 h-4.5 text-[#4285f4]" />
               </div>
-              <p className="text-slate-500 text-sm">
-                Upload your data — it will be embedded and woven into the semantic graph.
-              </p>
+              <div>
+                <h2
+                  className="text-[#e8eaed] font-medium text-lg leading-tight"
+                  style={{ fontFamily: "Roboto, sans-serif" }}
+                >
+                  Add to Map
+                </h2>
+                <p
+                  className="text-[#9aa0a6] text-xs mt-0.5"
+                  style={{ fontFamily: "Roboto, sans-serif" }}
+                >
+                  Upload data to embed into the semantic graph
+                </p>
+              </div>
             </div>
             {!isProcessing && (
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:text-white hover:bg-white/5 transition-all flex-shrink-0"
+                className="w-7 h-7 rounded flex items-center justify-center text-[#5f6368] hover:text-[#e8eaed] hover:bg-white/5 transition-all"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -132,7 +131,7 @@ export function UploadPanel({ onSuccess, onClose }: UploadPanelProps) {
             onChange={handleChange}
           />
 
-          {/* Drop zone */}
+          {/* Drop zone — Google Maps card style */}
           <div
             onDragOver={(e) => {
               e.preventDefault();
@@ -141,22 +140,22 @@ export function UploadPanel({ onSuccess, onClose }: UploadPanelProps) {
             onDragLeave={() => setDragging(false)}
             onDrop={handleDrop}
             onClick={() => !isProcessing && fileRef.current?.click()}
-            className="relative rounded-2xl flex flex-col items-center justify-center gap-4 py-14 transition-all duration-300"
+            className="relative rounded-xl flex flex-col items-center justify-center gap-4 py-12 transition-all duration-200"
             style={{
               border: `2px dashed ${
                 dragging
-                  ? "rgba(99,102,241,0.7)"
+                  ? "rgba(66,133,244,0.6)"
                   : uploadState === "success"
-                  ? "rgba(16,185,129,0.5)"
+                  ? "rgba(52,168,83,0.5)"
                   : uploadState === "error"
-                  ? "rgba(239,68,68,0.4)"
+                  ? "rgba(234,67,53,0.4)"
                   : "rgba(255,255,255,0.08)"
               }`,
               background: dragging
-                ? "rgba(99,102,241,0.06)"
+                ? "rgba(66,133,244,0.05)"
                 : uploadState === "success"
-                ? "rgba(16,185,129,0.04)"
-                : "rgba(255,255,255,0.015)",
+                ? "rgba(52,168,83,0.04)"
+                : "rgba(255,255,255,0.02)",
               cursor: isProcessing ? "default" : "pointer",
             }}
           >
@@ -164,56 +163,71 @@ export function UploadPanel({ onSuccess, onClose }: UploadPanelProps) {
               {isProcessing ? (
                 <motion.div
                   key="processing"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.85 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  exit={{ opacity: 0, scale: 0.85 }}
                   className="flex flex-col items-center gap-3"
                 >
                   <div className="relative">
                     <div
-                      className="w-14 h-14 rounded-full border border-indigo-500/20 flex items-center justify-center"
-                      style={{ boxShadow: "0 0 20px rgba(99,102,241,0.15)" }}
+                      className="w-12 h-12 rounded-full flex items-center justify-center"
+                      style={{
+                        background: "rgba(66,133,244,0.1)",
+                        border: "1px solid rgba(66,133,244,0.25)",
+                      }}
                     >
-                      <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+                      <Loader2 className="w-5 h-5 text-[#4285f4] animate-spin" />
                     </div>
                     <motion.div
-                      className="absolute inset-0 rounded-full border border-indigo-500/30"
-                      animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+                      className="absolute inset-0 rounded-full border border-[#4285f4]/30"
+                      animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     />
                   </div>
                   <div className="text-center">
-                    <p className="text-white text-sm font-medium">
+                    <p
+                      className="text-[#e8eaed] text-sm font-medium"
+                      style={{ fontFamily: "Roboto, sans-serif" }}
+                    >
                       {uploadState === "uploading" ? "Uploading..." : "Generating embeddings..."}
                     </p>
-                    <p className="text-slate-500 text-xs mt-1 font-mono">
+                    <p
+                      className="text-[#9aa0a6] text-xs mt-1"
+                      style={{ fontFamily: "Roboto Mono, monospace" }}
+                    >
                       {uploadState === "uploading"
                         ? "Parsing your data"
-                        : "Gemini text-embedding-004 · 768 dimensions"}
+                        : "Gemini text-embedding-004 · 768 dims"}
                     </p>
                   </div>
                 </motion.div>
               ) : uploadState === "success" ? (
                 <motion.div
                   key="success"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.85 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex flex-col items-center gap-3"
                 >
                   <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center"
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
                     style={{
-                      background: "rgba(16,185,129,0.1)",
-                      border: "1px solid rgba(16,185,129,0.3)",
+                      background: "rgba(52,168,83,0.1)",
+                      border: "1px solid rgba(52,168,83,0.3)",
                     }}
                   >
-                    <CheckCircle className="w-7 h-7 text-emerald-400" />
+                    <CheckCircle className="w-6 h-6 text-[#34a853]" />
                   </div>
                   <div className="text-center">
-                    <p className="text-emerald-300 text-sm font-semibold">
-                      {result?.nodes_created} nodes added to the graph
+                    <p
+                      className="text-[#81c995] text-sm font-medium"
+                      style={{ fontFamily: "Roboto, sans-serif" }}
+                    >
+                      {result?.nodes_created} nodes added to the map
                     </p>
-                    <p className="text-slate-500 text-xs mt-1 font-mono">
+                    <p
+                      className="text-[#9aa0a6] text-xs mt-1"
+                      style={{ fontFamily: "Roboto Mono, monospace" }}
+                    >
                       Refreshing semantic universe...
                     </p>
                   </div>
@@ -226,24 +240,28 @@ export function UploadPanel({ onSuccess, onClose }: UploadPanelProps) {
                   className="flex flex-col items-center gap-3"
                 >
                   <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-all"
                     style={{
-                      background: dragging
-                        ? "rgba(99,102,241,0.15)"
-                        : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${dragging ? "rgba(99,102,241,0.4)" : "rgba(255,255,255,0.08)"}`,
+                      background: dragging ? "rgba(66,133,244,0.12)" : "rgba(255,255,255,0.04)",
+                      border: `1px solid ${dragging ? "rgba(66,133,244,0.35)" : "rgba(255,255,255,0.07)"}`,
                     }}
                   >
                     <Upload
-                      className="w-6 h-6 transition-colors"
-                      style={{ color: dragging ? "#818cf8" : "rgba(100,116,139,0.6)" }}
+                      className="w-5 h-5 transition-colors"
+                      style={{ color: dragging ? "#4285f4" : "#9aa0a6" }}
                     />
                   </div>
                   <div className="text-center">
-                    <p className="text-white text-sm font-medium">
+                    <p
+                      className="text-[#e8eaed] text-sm font-medium"
+                      style={{ fontFamily: "Roboto, sans-serif" }}
+                    >
                       {dragging ? "Release to upload" : "Drop your file here"}
                     </p>
-                    <p className="text-slate-500 text-xs mt-1">
+                    <p
+                      className="text-[#9aa0a6] text-xs mt-1"
+                      style={{ fontFamily: "Roboto, sans-serif" }}
+                    >
                       TXT · JSON · CSV — up to 10MB
                     </p>
                   </div>
@@ -252,57 +270,75 @@ export function UploadPanel({ onSuccess, onClose }: UploadPanelProps) {
             </AnimatePresence>
           </div>
 
-          {/* Error message */}
+          {/* Error */}
           <AnimatePresence>
             {uploadState === "error" && result && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="mt-4 rounded-xl p-3 flex items-start gap-3"
+                className="mt-3 rounded-lg p-3 flex items-start gap-2.5"
                 style={{
-                  background: "rgba(239,68,68,0.08)",
-                  border: "1px solid rgba(239,68,68,0.2)",
+                  background: "rgba(234,67,53,0.08)",
+                  border: "1px solid rgba(234,67,53,0.2)",
                 }}
               >
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                <p className="text-red-300 text-sm">{result.message}</p>
+                <AlertCircle className="w-4 h-4 text-[#ea4335] flex-shrink-0 mt-0.5" />
+                <p
+                  className="text-[#f28b82] text-sm"
+                  style={{ fontFamily: "Roboto, sans-serif" }}
+                >
+                  {result.message}
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Format guide */}
-          <div className="mt-5 grid grid-cols-3 gap-2.5">
+          {/* Format guide — Google Maps info chips */}
+          <div className="mt-4 grid grid-cols-3 gap-2">
             {[
-              { label: "TXT", desc: "Paragraphs become nodes" },
-              { label: "JSON", desc: "Array with title/content" },
-              { label: "CSV", desc: "title, content, category" },
+              { label: ".txt", desc: "Paragraphs → nodes" },
+              { label: ".json", desc: "title + content" },
+              { label: ".csv", desc: "title, content, cat" },
             ].map((fmt) => (
               <div
                 key={fmt.label}
-                className="rounded-xl p-3 text-center"
+                className="rounded-lg p-2.5 text-center"
                 style={{
                   background: "rgba(255,255,255,0.025)",
                   border: "1px solid rgba(255,255,255,0.05)",
                 }}
               >
-                <FileText className="w-3.5 h-3.5 text-slate-600 mx-auto mb-1.5" />
-                <p className="text-white text-xs font-mono font-bold">.{fmt.label.toLowerCase()}</p>
-                <p className="text-slate-600 text-xs mt-0.5">{fmt.desc}</p>
+                <FileText className="w-3.5 h-3.5 text-[#5f6368] mx-auto mb-1" />
+                <p
+                  className="text-[#e8eaed] text-xs font-medium"
+                  style={{ fontFamily: "Roboto Mono, monospace" }}
+                >
+                  {fmt.label}
+                </p>
+                <p
+                  className="text-[#5f6368] text-xs mt-0.5"
+                  style={{ fontFamily: "Roboto, sans-serif" }}
+                >
+                  {fmt.desc}
+                </p>
               </div>
             ))}
           </div>
 
           {/* Qdrant note */}
           <div
-            className="mt-4 flex items-center gap-2 px-3 py-2 rounded-xl"
+            className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg"
             style={{
-              background: "rgba(99,102,241,0.04)",
-              border: "1px solid rgba(99,102,241,0.1)",
+              background: "rgba(66,133,244,0.04)",
+              border: "1px solid rgba(66,133,244,0.1)",
             }}
           >
-            <Sparkles className="w-3 h-3 text-indigo-500 flex-shrink-0" />
-            <p className="text-xs text-slate-600 font-mono">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#4285f4] qdrant-pulse flex-shrink-0" />
+            <p
+              className="text-xs text-[#5f6368]"
+              style={{ fontFamily: "Roboto Mono, monospace" }}
+            >
               Vectors stored in Qdrant · Cosine similarity · 768 dimensions
             </p>
           </div>

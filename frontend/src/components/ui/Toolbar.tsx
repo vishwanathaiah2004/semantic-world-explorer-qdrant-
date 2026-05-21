@@ -1,10 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { RefreshCw, Upload, Home, Sparkles, Database, Activity } from "lucide-react";
+import { Upload, RefreshCw, Home, Sparkles, Database, Layers } from "lucide-react";
 import Link from "next/link";
 
-interface ToolbarProps {
+interface MapToolbarProps {
   nodeCount: number;
   linkCount: number;
   onUpload: () => void;
@@ -12,147 +12,111 @@ interface ToolbarProps {
   loading: boolean;
 }
 
-export function Toolbar({ nodeCount, linkCount, onUpload, onRefresh, loading }: ToolbarProps) {
+export function MapToolbar({ nodeCount, linkCount, onUpload, onRefresh, loading }: MapToolbarProps) {
   return (
     <motion.div
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.1 }}
-      className="flex items-center justify-between px-5 py-3 relative z-20"
-      style={{
-        background: "rgba(4, 6, 16, 0.85)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(255,255,255,0.05)",
-      }}
+      transition={{ duration: 0.5 }}
+      className="toolbar flex items-center gap-3 px-4 py-0 relative z-30 flex-shrink-0"
+      style={{ height: 56 }}
     >
-      {/* Logo + stats */}
-      <div className="flex items-center gap-4">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center transition-all group-hover:scale-110"
-            style={{
-              background: "rgba(99,102,241,0.15)",
-              border: "1px solid rgba(99,102,241,0.35)",
-              boxShadow: "0 0 12px rgba(99,102,241,0.2)",
-            }}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          </div>
-          <span
-            className="text-white font-bold text-sm hidden sm:block"
-            style={{ fontFamily: "Syne, sans-serif" }}
-          >
-            Semantic Explorer
-          </span>
-        </Link>
-
-        {/* Live stats */}
-        <div className="hidden md:flex items-center gap-3">
-          <div
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <Database className="w-3 h-3 text-slate-500" />
-            <span className="text-xs font-mono text-slate-400">
-              {nodeCount.toLocaleString()} nodes
-            </span>
-          </div>
-          <div
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <Activity className="w-3 h-3 text-slate-500" />
-            <span className="text-xs font-mono text-slate-400">
-              {linkCount.toLocaleString()} connections
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Center — Qdrant badge + discovery stat */}
-      <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-3">
+      {/* Logo */}
+      <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group mr-2">
         <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+          className="w-7 h-7 rounded-lg flex items-center justify-center transition-all group-hover:scale-110"
           style={{
-            background: "rgba(99,102,241,0.08)",
-            border: "1px solid rgba(99,102,241,0.2)",
+            background: "rgba(99,102,241,0.15)",
+            border: "1px solid rgba(99,102,241,0.35)",
+            boxShadow: "0 0 12px rgba(99,102,241,0.2)",
           }}
         >
-          <div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{
-              background: "#6366f1",
-              boxShadow: "0 0 6px #6366f1",
-              animation: "qdrantPulse 2.5s ease-in-out infinite",
-            }}
-          />
-          <span className="text-xs font-mono text-indigo-400/70">
-            Qdrant · Vector Search Active
-          </span>
+          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
         </div>
-        {linkCount > 0 && (
-          <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{
-              background: "rgba(16,185,129,0.07)",
-              border: "1px solid rgba(16,185,129,0.2)",
-            }}
-          >
-            <Sparkles className="w-3 h-3 text-emerald-400" />
-            <span className="text-xs font-mono text-emerald-400/70">
-              {linkCount} semantic connections discovered
-            </span>
+        <div className="hidden sm:block">
+          <div className="text-slate-200 font-semibold text-sm leading-tight" style={{ fontFamily: "Syne, Space Grotesk, sans-serif" }}>
+            Semantic World
           </div>
-        )}
+          <div className="text-slate-600 text-xs leading-tight" style={{ fontFamily: "JetBrains Mono, monospace" }}>
+            Explorer
+          </div>
+        </div>
+      </Link>
+
+      <div className="w-px h-5 bg-white/8 flex-shrink-0" />
+
+      {/* Spacer — search floats below */}
+      <div className="flex-1" />
+
+      {/* Stats */}
+      <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
+        <div className="semantic-badge flex items-center gap-1.5">
+          <Database className="w-3 h-3" />
+          {nodeCount} nodes
+        </div>
+        <div className="semantic-badge flex items-center gap-1.5" style={{ color: "#34d399", borderColor: "rgba(52,211,153,0.25)", background: "rgba(52,211,153,0.08)" }}>
+          <Layers className="w-3 h-3" />
+          {linkCount} links
+        </div>
       </div>
 
+      {/* Qdrant live */}
+      <div
+        className="hidden xl:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs flex-shrink-0"
+        style={{
+          background: "rgba(4,6,15,0.7)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          color: "#475569",
+          fontFamily: "JetBrains Mono, monospace",
+        }}
+      >
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 qdrant-pulse" />
+        Qdrant · Live
+      </div>
+
+      <div className="w-px h-5 bg-white/8 flex-shrink-0" />
+
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 flex-shrink-0">
         <Link
           href="/"
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-all"
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:text-slate-300 hover:bg-white/5 transition-all"
           title="Home"
         >
           <Home className="w-4 h-4" />
         </Link>
-
         <button
           onClick={onRefresh}
           disabled={loading}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-all disabled:opacity-40"
-          title="Refresh graph"
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:text-slate-300 hover:bg-white/5 transition-all disabled:opacity-30"
+          title="Refresh"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         </button>
-
         <button
           onClick={onUpload}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-white text-xs font-semibold transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-1.5 rounded-xl text-white text-xs font-semibold transition-all duration-200 flex-shrink-0"
           style={{
-            background: "rgba(99,102,241,0.18)",
-            border: "1px solid rgba(99,102,241,0.35)",
-            boxShadow: "0 0 12px rgba(99,102,241,0.1)",
+            background: "rgba(99,102,241,0.2)",
+            border: "1px solid rgba(99,102,241,0.4)",
+            boxShadow: "0 0 16px rgba(99,102,241,0.15)",
+            fontFamily: "Space Grotesk, sans-serif",
           }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.3)";
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 20px rgba(99,102,241,0.25)";
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.35)";
+            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 24px rgba(99,102,241,0.3)";
           }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.18)";
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 12px rgba(99,102,241,0.1)";
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.2)";
+            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 16px rgba(99,102,241,0.15)";
           }}
         >
           <Upload className="w-3.5 h-3.5" />
-          Ingest Data
+          <span className="hidden sm:inline">Add Data</span>
         </button>
       </div>
     </motion.div>
   );
 }
+
+export { MapToolbar as Toolbar };
