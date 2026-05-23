@@ -5,6 +5,15 @@
 Built for the **Qdrant "Think Outside the Bot" Hackathon 2026**.
 
 ---
+## 🎥 Demo Video
+
+Watch the full project demo here:
+
+[![Watch the Demo](https://img.youtube.com/vi/_QQlBwxgfwE/maxresdefault.jpg)](https://youtu.be/_QQlBwxgfwE)
+
+Direct Link:
+https://youtu.be/_QQlBwxgfwE
+
 
 ## ✨ What is this?
 
@@ -210,16 +219,4 @@ The app auto-seeds **30 curated nodes** across 8 domains on first startup:
 
 ---
 
-## 🏆 Hackathon Judging Notes
-
-**Why this wins "Think Outside the Bot":**
-
-1. **Not a chatbot** — Pure visual navigation of semantic space
-2. **Qdrant as the brain** — Every feature is powered by vector similarity, not keyword matching
-3. **Production quality** — Clean architecture, Docker, error handling, demo data
-4. **Immediate wow factor** — Opens to a live, animated knowledge universe in seconds
-5. **Extensible** — Swap embedding provider, add new data sources, extend the graph
-
----
-
-*Made with 🌌 for the Qdrant Hackathon 2024*
+*Made for the Qdrant Hackathon 2026*
