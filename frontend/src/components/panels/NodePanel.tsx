@@ -63,6 +63,7 @@ function InsightText({ text }: { text: string }) {
   );
 }
 
+
 function ConnectionExplainer({ sourceId, targetId, onClose }: { sourceId: string; targetId: string; onClose: () => void }) {
   const [data, setData] = useState<{ explanation: string; shared_themes: string[] } | null>(null);
   const [loading, setLoading] = useState(true);
