@@ -64,5 +64,6 @@ class GeminiEmbeddingProvider(EmbeddingProvider):
         return (np.array(vec) / norm).tolist()
 
 
+
 def get_embedding_provider() -> EmbeddingProvider:
     return GeminiEmbeddingProvider()
