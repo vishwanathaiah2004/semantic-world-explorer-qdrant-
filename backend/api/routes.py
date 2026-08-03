@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-
 def get_deps():
     emb = get_embedding_provider()
     qdrant = get_qdrant_service()
