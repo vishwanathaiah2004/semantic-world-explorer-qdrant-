@@ -136,5 +136,6 @@ def build_graph(
     return GraphData(nodes=nodes, links=links)
 
 
+
 def get_category_color(category: str) -> str:
     return CATEGORY_COLORS.get(category, CATEGORY_COLORS["Other"])
