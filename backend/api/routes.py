@@ -21,7 +21,6 @@ def get_deps():
     return emb, qdrant
 
 
-
 @router.post("/upload", response_model=UploadResponse)
 async def upload_data(file: UploadFile = File(...)):
     if not file.filename:
