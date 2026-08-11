@@ -23,6 +23,7 @@ class EmbeddingProvider(ABC):
         pass
 
 
+
 class GeminiEmbeddingProvider(EmbeddingProvider):
     def __init__(self):
         if settings.gemini_api_key:
