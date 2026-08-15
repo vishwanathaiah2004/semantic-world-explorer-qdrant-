@@ -4,8 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "@/services/api";
 import type { GraphData, NodeDetail, SearchResult } from "@/types/graph";
 
-
-
 export function useGraph() {
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
