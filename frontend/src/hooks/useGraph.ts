@@ -24,6 +24,8 @@ export function useGraph() {
     }
   }, []);
 
+  
+
   useEffect(() => {
     loadGraph();
   }, [loadGraph]);
