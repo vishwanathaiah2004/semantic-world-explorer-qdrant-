@@ -5,7 +5,6 @@ from models.schemas import GraphNode, GraphLink, GraphData
 import logging
 import math
 
-
 logger = logging.getLogger(__name__)
 
 CATEGORY_COLORS = {
