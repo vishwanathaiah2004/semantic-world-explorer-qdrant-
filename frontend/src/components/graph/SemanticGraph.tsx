@@ -6,6 +6,7 @@ import type { GraphData, GraphNode } from "@/types/graph";
 import { getCategoryColor } from "@/types/graph";
 
 
+
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
   loading: () => (
