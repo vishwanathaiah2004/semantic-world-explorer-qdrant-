@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-
-
 export const metadata: Metadata = {
   title: "Semantic World Explorer — Google Maps for Ideas",
   description: "An AI-powered semantic exploration platform. Discover hidden connections between ideas, research, and knowledge through interactive vector-space visualization.",
