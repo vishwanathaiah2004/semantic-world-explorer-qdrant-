@@ -17,7 +17,6 @@ const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
 });
 
 
-
 interface SemanticGraphProps {
   data: GraphData;
   onNodeClick: (node: GraphNode) => void;
