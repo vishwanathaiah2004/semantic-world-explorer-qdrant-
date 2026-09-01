@@ -16,6 +16,7 @@ class EmbeddingProvider(ABC):
     @abstractmethod
     async def embed_single(self, text: str) -> list[float]:
         pass
+        
 
     @property
     @abstractmethod
