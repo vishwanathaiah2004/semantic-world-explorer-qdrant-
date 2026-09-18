@@ -4,7 +4,7 @@ set -e
 echo ""
 echo "🌌 Semantic World Explorer — Setup"
 echo "=================================="
-echo ""
+echo ""            
 
 # Check Node
 if ! command -v node &> /dev/null; then
