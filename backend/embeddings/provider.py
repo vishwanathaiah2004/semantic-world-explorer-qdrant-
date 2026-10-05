@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import google.generativeai as genai
 from config import settings
 import numpy as np
-from tenacity import retry, stop_after_attempt, wait_exponential;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+from tenacity import retry, stop_after_attempt, wait_exponential
 import logging
 
 logger = logging.getLogger(__name__)
